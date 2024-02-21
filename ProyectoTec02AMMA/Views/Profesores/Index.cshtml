@@ -37,10 +37,19 @@
                 @Html.DisplayFor(modelItem => item.Apellido)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Foto)
+                    @{
+                        string urlBase64 = "";
+                        if (item.Foto != null && item.Foto.Length > 0)
+                        {
+                            string base64String = Convert.ToBase64String(item.Foto);
+                            urlBase64 = "data:image/jpeg;base64," + base64String;
+                        }
+                    }
+                    <img src="@urlBase64" width="40px" />
+
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Carrera.CarreraId)
+                @Html.DisplayFor(modelItem => item.Carrera.Nombre)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ProfesorId">Edit</a> |

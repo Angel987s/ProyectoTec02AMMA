@@ -26,13 +26,24 @@
             @Html.DisplayNameFor(model => model.Foto)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Foto)
+            <div>
+                @{
+                    string urlBase64 = "";
+                    if (Model.Foto != null && Model.Foto.Length > 0)
+                    {
+                        string base64String = Convert.ToBase64String(Model.Foto);
+                        urlBase64 = "data:image/jpeg;base64," + base64String;
+                    }
+                }
+                <img src="@urlBase64" width="40px" />
+
+            </div>
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Carrera)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Carrera.CarreraId)
+            @Html.DisplayFor(model => model.Carrera.Nombre)
         </dd>
     </dl>
 </div>

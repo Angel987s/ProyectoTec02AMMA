@@ -47,7 +47,7 @@ namespace ProyectoTec02AMMA.Controllers
         // GET: Profesores/Create
         public IActionResult Create()
         {
-            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "CarreraId");
+            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "Nombre");
             return View();
         }
 
@@ -56,15 +56,23 @@ namespace ProyectoTec02AMMA.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProfesorId,Nombre,Apellido,Foto,CarreraId")] Profesore profesore)
+        public async Task<IActionResult> Create([Bind("ProfesorId,Nombre,Apellido,Foto,CarreraId")] Profesore profesore, IFormFile Foto)
         {
             if (ModelState.IsValid)
             {
+                if (Foto != null && Foto.Length > 0)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await Foto.CopyToAsync(memoryStream);
+                        profesore.Foto = memoryStream.ToArray();
+                    }
+                }
                 _context.Add(profesore);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "CarreraId", profesore.CarreraId);
+            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "Nombre", profesore.CarreraId);
             return View(profesore);
         }
 
@@ -81,7 +89,7 @@ namespace ProyectoTec02AMMA.Controllers
             {
                 return NotFound();
             }
-            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "CarreraId", profesore.CarreraId);
+            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "Nombre", profesore.CarreraId);
             return View(profesore);
         }
 
@@ -90,17 +98,37 @@ namespace ProyectoTec02AMMA.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProfesorId,Nombre,Apellido,Foto,CarreraId")] Profesore profesore)
+        public async Task<IActionResult> Edit(int id, [Bind("ProfesorId,Nombre,Apellido,Foto,CarreraId")] Profesore profesore, IFormFile Foto)
         {
             if (id != profesore.ProfesorId)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            if (Foto != null && Foto.Length > 0)
             {
-                try
+                using (var memoryStream = new MemoryStream())
                 {
+                    await Foto.CopyToAsync(memoryStream);
+                    profesore.Foto = memoryStream.ToArray();
+                }
+                _context.Update(profesore);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var producFind = await _context.Profesores.FirstOrDefaultAsync(s => s.ProfesorId == profesore.ProfesorId);
+                if (producFind?.Foto?.Length > 0)
+                    profesore.Foto = producFind.Foto;
+                producFind.Nombre = profesore.Nombre;
+                producFind.Apellido = profesore.Apellido;
+                producFind.CarreraId = profesore.CarreraId;
+                _context.Update(producFind);
+                await _context.SaveChangesAsync();
+            }
+
+
+            try
+            {
                     _context.Update(profesore);
                     await _context.SaveChangesAsync();
                 }
@@ -116,9 +144,9 @@ namespace ProyectoTec02AMMA.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "CarreraId", profesore.CarreraId);
-            return View(profesore);
+            
+            /*ViewData["CarreraId"] = new SelectList(_context.Carreras, "CarreraId", "CarreraId", profesore.CarreraId);
+            return View(profesore);*/
         }
 
         // GET: Profesores/Delete/5
