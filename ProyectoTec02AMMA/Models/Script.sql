@@ -1,22 +1,24 @@
-Create database ProyectoTec02AMMA;
-use Escuela;
 
+
+-- Crear la base de datos
+CREATE DATABASE Universidad;
+GO
+
+-- Usar la base de datos creada
+USE Universidad;
+GO
+
+-- Crear tabla Carreras
+CREATE TABLE Carreras (
+    CarreraID INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100)
+);
+
+-- Crear tabla Profesores
 CREATE TABLE Profesores (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Nombre VARCHAR(100) NOT NULL,
-    Apellido VARCHAR(100) NOT NULL,
-    Edad INT,
-    Foto IMAGE,
-    IdCarrera int,
-    FOREIGN KEY (IdCarrera) REFERENCES Carrera(Id)
+    ProfesorID INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100),
+    Apellido NVARCHAR(100),
+    Foto IMAGE, -- Columna para almacenar imagen
+    CarreraID INT FOREIGN KEY REFERENCES Carreras(CarreraID)
 );
-;
-
-CREATE TABLE Carrera (
-    Id INT PRIMARY KEY IDENTITY(1,1),
-    Nombre VARCHAR(50) NOT NULL,
-    Descripcion VARCHAR(100),
-);
-
-select*from categoria
-
